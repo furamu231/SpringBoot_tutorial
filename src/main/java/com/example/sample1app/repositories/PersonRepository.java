@@ -9,6 +9,8 @@ import com.example.sample1app.Person;
 
 @Repository
 public interface PersonRepository extends JpaRepository<Person, Long> {
+
+    // リポジトリそのものには詳細な処理を記述することはありません
     
     public Optional<Person> findById(Long name);
 }
