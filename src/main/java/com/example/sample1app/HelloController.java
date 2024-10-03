@@ -2,6 +2,8 @@ package com.example.sample1app;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,11 +40,33 @@ public class HelloController {
     @PostMapping("/")
     @Transactional
     public ModelAndView form(
-        @ModelAttribute("formModel") Person person,
+        @ModelAttribute("formModel") @Validated Person person,
+        BindingResult result,
         ModelAndView mav
     ) {
-        repository.saveAndFlush(person);
-        return new ModelAndView("redirect:/");
+
+        ModelAndView res = null;
+        
+        // ログ確認
+        System.out.println(result.getFieldErrors());
+
+        if (!result.hasErrors()) {
+            repository.saveAndFlush(person);
+            res = new ModelAndView("redirect:/");
+        } else {
+            mav.setViewName("index");
+            mav.addObject("title", "Hello Page");
+            mav.addObject("msg", "sorry, error is occuring");
+            Iterable<Person> list = repository.findAll();
+
+            // listはthymeleaf側で展開する必要がありそう
+            mav.addObject("datalist", list);
+            res = mav;
+        }
+
+        // それぞれの結果に応じたmavを返す
+
+        return res;
     }
 
     @GetMapping("/edit/{id}")
@@ -51,6 +75,7 @@ public class HelloController {
         @PathVariable int id,
         ModelAndView mav
     ) {
+       
         mav.setViewName("edit");
         mav.addObject("title", "edit person");
         Optional<Person> data = repository.findById((long)id);
