@@ -66,7 +66,7 @@ public class HelloController {
 
         // それぞれの結果に応じたmavを返す
 
-        return mav;
+        return res;
     }
 
     @GetMapping("/edit/{id}")
