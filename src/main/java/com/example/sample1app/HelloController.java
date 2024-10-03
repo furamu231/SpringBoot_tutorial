@@ -14,15 +14,24 @@ import org.springframework.web.servlet.ModelAndView;
 import com.example.sample1app.repositories.PersonRepository;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Controller
 public class HelloController {
-    
+
+    // リポジトリを用いたデータアクセス
+
     @Autowired
     PersonRepository repository;
+
+    // DAOを用いたデータアクセス
+
+    @Autowired
+    PersonDAOPersonImpl dao;
 
     @GetMapping("/")
     public ModelAndView index(
@@ -104,15 +113,12 @@ public class HelloController {
         mav.setViewName("delete");
         mav.addObject("title", "Delete Person.");
         mav.addObject("msg", "delete this record");
-
-        // dataはOptionalのため、値を取り出す必要あり。
         
         Optional<Person> data = repository.findById((long)id);
         mav.addObject("formModel", data.get());
         return mav;
     }
-    
-    // なんでlongじゃないの？
+
     
     @PostMapping("/delete")
     @Transactional
@@ -124,7 +130,38 @@ public class HelloController {
         return new ModelAndView("redirect:/");
     }
 
+    @GetMapping("/find")
+    public ModelAndView index(ModelAndView mav) {
+        mav.setViewName("find");
+        mav.addObject("msg", "Personサンプル");
+        Iterable<Person> list = dao.getAll();
+        mav.addObject("data", list);
+        return mav;
+    }
 
+    @PostMapping("/find")
+    public ModelAndView search(
+        HttpServletRequest request,
+        ModelAndView mav
+        ) {
+            mav.setViewName("find");
+            String param = request.getParameter("find_str");
+            if (param == "") {
+                mav = new ModelAndView("redirect:/find");
+            } else {
+                mav.addObject("title", "Find result");
+                mav.addObject("msg", "「" + param + "」の検索結果");
+                mav.addObject("value", param);
+
+                // Stringで受け取るからパース必要
+
+                List<Person> data = dao.findByName(param);
+
+                mav.addObject("data", data);
+            }
+
+            return mav;
+        }
 
 
     // ダミーデータの追加
