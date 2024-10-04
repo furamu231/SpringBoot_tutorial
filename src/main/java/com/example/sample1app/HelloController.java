@@ -155,9 +155,10 @@ public class HelloController {
 
                 // Stringで受け取るからパース必要
 
-                List<Person> data = dao.findByName(param);
+                // List<Person> data = dao.findByName(param);
+                List<Person> list = dao.find(param);
 
-                mav.addObject("data", data);
+                mav.addObject("data", list);
             }
 
             return mav;
