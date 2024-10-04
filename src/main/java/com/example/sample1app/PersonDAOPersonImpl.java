@@ -49,10 +49,25 @@ public class PersonDAOPersonImpl implements PersonDAO<Person> {
     @Override 
     public List<Person> find(String fstr) {
         List<Person> list = null;
-        String qstr = "from Person where id = :fstr";
+
+        // id検索、名前、Eメールによるあいまい検索
+
+        String qstr = "from Person where id = :fid or name like :fname or mail like :fmail";
+
+        Long fid = 0L;
+        try {
+            fid = Long.parseLong(fstr);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
+
         Query query = entityManager.createQuery(qstr)
-            // queryを作成 + パラメータをセット
-            .setParameter("fstr", Long.parseLong(fstr));
+            .setParameter("fid", fid)
+
+            // あいまい検索
+            .setParameter("fname", "%" + fstr+ "%")
+            .setParameter("fmail", fstr + "%@%");
+
         list = query.getResultList();
         return list;
     }

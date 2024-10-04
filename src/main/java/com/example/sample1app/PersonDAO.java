@@ -19,4 +19,3 @@ public interface PersonDAO <T> extends Serializable {
 
 }
 
-// ここに接続先のテーブル情報を記述するわけではない
