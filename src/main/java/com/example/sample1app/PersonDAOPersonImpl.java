@@ -52,7 +52,7 @@ public class PersonDAOPersonImpl implements PersonDAO<Person> {
 
         // id検索、名前、Eメールによるあいまい検索
 
-        String qstr = "from Person where id = :fid or name like :fname or mail like :fmail";
+        String qstr = "from Person where id = ?1 or name like ?2 or mail like ?3";
 
         Long fid = 0L;
         try {
@@ -62,11 +62,11 @@ public class PersonDAOPersonImpl implements PersonDAO<Person> {
         }
 
         Query query = entityManager.createQuery(qstr)
-            .setParameter("fid", fid)
+            .setParameter(1, fid)
 
             // あいまい検索
-            .setParameter("fname", "%" + fstr+ "%")
-            .setParameter("fmail", fstr + "%@%");
+            .setParameter(2, "%" + fstr+ "%")
+            .setParameter(3, fstr + "%@%");
 
         list = query.getResultList();
         return list;
