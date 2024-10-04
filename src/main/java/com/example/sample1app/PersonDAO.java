@@ -13,6 +13,9 @@ public interface PersonDAO <T> extends Serializable {
 
     // 名前で検索
     public List<T> findByName(String name);
+
+    // JPQLの使用
+    public List<T> find(String fste);
+
 }
 
-// ここに接続先のテーブル情報を記述するわけではない

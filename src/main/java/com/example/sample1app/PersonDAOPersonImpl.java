@@ -46,6 +46,32 @@ public class PersonDAOPersonImpl implements PersonDAO<Person> {
         .getResultList();
     }
 
+    @Override 
+    public List<Person> find(String fstr) {
+        List<Person> list = null;
+
+        // id検索、名前、Eメールによるあいまい検索
+
+        String qstr = "from Person where id = ?1 or name like ?2 or mail like ?3";
+
+        Long fid = 0L;
+        try {
+            fid = Long.parseLong(fstr);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
+
+        Query query = entityManager.createQuery(qstr)
+            .setParameter(1, fid)
+
+            // あいまい検索
+            .setParameter(2, "%" + fstr+ "%")
+            .setParameter(3, fstr + "%@%");
+
+        list = query.getResultList();
+        return list;
+    }
+
 
     
 }
